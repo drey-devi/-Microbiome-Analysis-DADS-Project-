@@ -15,19 +15,15 @@ Treatments: DADS-treated vs. untreated
 Incubation: Aerobic vs. Anaerobic
 
 Avg depth: 18,469 reads/sample
-(From project slides 
-
-BDS 491_ Group 1
-
-)
+(From project slides BDS 491_ Group 1)
 
 ## Pipeline Summary
 1. Load Data
-<pre>```bash arg1  <- readRDS("phyloseq.dads.rds")
-soil  <- read.csv("Metadata_diallyldisulfide_exp_16S.csv")```</pre>
+<pre> arg1  <- readRDS("phyloseq.dads.rds")
+soil  <- read.csv("Metadata_diallyldisulfide_exp_16S.csv")</pre>
 
 2. Normalization
-<pre>```bash
+<pre>
 RA (Relative Abundance)
 
 RF (Rarefaction)
@@ -37,14 +33,14 @@ CSS (Cumulative Sum Scaling)
 RA showed the tightest clustering → used for hypotheses.
 
 3. Beta Diversity
-<pre>```bash
+<pre>
 gp.ord <- ordinate(arg1_norm_RA, "PCoA")
-plot_ordination(arg1_norm_RA, gp.ord, color="Treatment")```</pre>
+plot_ordination(arg1_norm_RA, gp.ord, color="Treatment")</pre>
 
 5. Statistical Testing
-<pre>```bash
+<pre>
 PERMANOVA (adonis2)
-```</pre>
+</pre>
 Bray–Curtis distance
 
 CAP constrained ordination
@@ -52,11 +48,7 @@ CAP constrained ordination
 ## Hypotheses & Results
 Hypothesis 1 — Soil type influences microbial composition
 
-(Full analysis in Divy PDF 
-
-Hypothesis_1_testing_divy
-
-)
+(Full analysis in Divy PDF Hypothesis_1_testing_divy)
 
 Soil alone: not significant (p = 0.07, R² = 1.5%)
 
