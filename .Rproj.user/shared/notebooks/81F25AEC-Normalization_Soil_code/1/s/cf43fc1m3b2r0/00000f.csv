@@ -1,0 +1,5 @@
+"0","sum_otu <- data.frame(samples = rownames(otu), depth = rowSums(otu))"
+"0","sum_otu2 <- left_join(sum_otu, sample_df, by = c(""samples"" = ""Sample_name16S""))"
+"0","sum_otu2 <- sum_otu2 %>% filter(!is.na(Treatment), !is.na(depth))"
+"0","my_comparisons <- list(c(""untreated"", ""DADS_treated""))"
+"0","sum_otu3<- select(sum_otu2, c('samples','depth','Soil','Treatment'))"

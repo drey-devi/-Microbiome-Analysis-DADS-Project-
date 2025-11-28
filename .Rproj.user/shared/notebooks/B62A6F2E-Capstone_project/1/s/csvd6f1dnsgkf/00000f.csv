@@ -1,0 +1,83 @@
+"0","## CSS"
+"0",""
+"0","library(metagenomeSeq)"
+"2","Loading required package: Biobase
+"
+"2","Loading required package: BiocGenerics
+"
+"2","
+Attaching package: ‘BiocGenerics’
+
+"
+"2","The following objects are masked from ‘package:dplyr’:
+
+    combine, intersect, setdiff, union
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    IQR, mad, sd, var, xtabs
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    anyDuplicated, aperm, append, as.data.frame, basename, cbind, colnames, dirname, do.call, duplicated, eval, evalq, Filter, Find, get, grep,
+    grepl, intersect, is.unsorted, lapply, Map, mapply, match, mget, order, paste, pmax, pmax.int, pmin, pmin.int, Position, rank, rbind, Reduce,
+    rownames, sapply, saveRDS, setdiff, table, tapply, union, unique, unsplit, which.max, which.min
+
+"
+"2","Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with 'browseVignettes()'. To cite Bioconductor, see 'citation(""Biobase"")', and for packages
+    'citation(""pkgname"")'.
+
+"
+"2","
+Attaching package: ‘Biobase’
+
+"
+"2","The following object is masked from ‘package:phyloseq’:
+
+    sampleNames
+
+"
+"2","Loading required package: limma
+"
+"2","
+Attaching package: ‘limma’
+
+"
+"2","The following object is masked from ‘package:BiocGenerics’:
+
+    plotMA
+
+"
+"2","Loading required package: glmnet
+"
+"2","Loading required package: Matrix
+"
+"2","
+Attaching package: ‘Matrix’
+
+"
+"2","The following objects are masked from ‘package:tidyr’:
+
+    expand, pack, unpack
+
+"
+"2","Loaded glmnet 4.1-8
+"
+"2","Loading required package: RColorBrewer
+"
+"0","CSS_norm<-function(ps){"
+"0","  library(metagenomeSeq)"
+"0","  ps.metaG<-phyloseq_to_metagenomeSeq(ps)"
+"0","  p_stat = cumNormStatFast(ps.metaG)"
+"0","  ps.metaG = cumNorm(ps.metaG, p = p_stat)"
+"0","  ps.metaG.norm <- MRcounts(ps.metaG, norm = T)"
+"0","  ps_CSS<-phyloseq(otu_table(ps.metaG.norm, taxa_are_rows = T), sample_data(ps),tax_table(ps))"
+"0","  return(ps_CSS)"
+"0","}"
+"0","arg1_norm_CSS<-CSS_norm(arg1)"
+"2","Default value being used.
+"

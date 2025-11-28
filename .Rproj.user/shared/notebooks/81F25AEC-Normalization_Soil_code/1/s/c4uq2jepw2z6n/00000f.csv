@@ -1,0 +1,77 @@
+"0","library(tidyr)"
+"2","
+Attaching package: ‘tidyr’
+
+"
+"2","The following object is masked from ‘package:S4Vectors’:
+
+    expand
+
+"
+"0","library(dplyr)"
+"2","
+Attaching package: ‘dplyr’
+
+"
+"2","The following objects are masked from ‘package:Biostrings’:
+
+    collapse, intersect, setdiff, setequal, union
+
+"
+"2","The following object is masked from ‘package:GenomeInfoDb’:
+
+    intersect
+
+"
+"2","The following object is masked from ‘package:XVector’:
+
+    slice
+
+"
+"2","The following objects are masked from ‘package:IRanges’:
+
+    collapse, desc, intersect, setdiff, slice, union
+
+"
+"2","The following objects are masked from ‘package:S4Vectors’:
+
+    first, intersect, rename, setdiff, setequal, union
+
+"
+"2","The following objects are masked from ‘package:BiocGenerics’:
+
+    combine, intersect, setdiff, union
+
+"
+"2","The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+"
+"2","The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+"
+"0","library(ggplot2)"
+"0","library(ggpubr)"
+"0","library(phyloseq)"
+"2","
+Attaching package: ‘phyloseq’
+
+"
+"2","The following object is masked from ‘package:IRanges’:
+
+    distance
+
+"
+"0","soil= read.csv(""Metadata_diallyldisulfide_exp_16S.csv"")"
+"0","arg1 <- readRDS(""phyloseq.dads.rds"")"
+"0",""
+"0",""
+"0","otu<- otu_table(arg1)"
+"0","taxa<- tax_table(arg1)"
+"0","sample<-sample_data(arg1)"
+"0","sam_sum<- sample_sums(arg1)"
+"0","sample_df<-  as.data.frame(sample)"
+"0","ref_seq<- refseq(arg1)"

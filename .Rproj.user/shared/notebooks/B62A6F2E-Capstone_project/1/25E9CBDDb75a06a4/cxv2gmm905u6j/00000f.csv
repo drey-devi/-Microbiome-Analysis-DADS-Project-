@@ -1,0 +1,8 @@
+"0","sum_otu2 <- left_join(sum_otu, sample_df, by = c(""samples"" = ""Sample_name16S""))"
+"0","sum_otu2 <- sum_otu2 %>% filter(!is.na(Treatment), !is.na(depth))"
+"0","p <- ggplot(data = sum_otu2, aes(x = Treatment, y = depth)) +"
+"0","  geom_boxplot()+ "
+"0","  coord_flip()+"
+"0","  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +"
+"0","  labs(x = ""Sample"", y = ""Sequencing Depth"")"
+"0","p + facet_wrap(~Soil)"

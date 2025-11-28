@@ -1,0 +1,2 @@
+"0","#Relative abundance"
+"0","phyloseq_relative_abun<- transform_sample_counts(otu, function(x) x / sum(x) )"

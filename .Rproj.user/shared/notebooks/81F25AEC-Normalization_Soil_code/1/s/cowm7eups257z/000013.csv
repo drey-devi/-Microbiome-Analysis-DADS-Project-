@@ -1,0 +1,7 @@
+"0","library(Biostrings)"
+"0",""
+"0","# Save your ref_seq (a DNAStringSet) to a FASTA file"
+"0","writeXStringSet(ref_seq, filepath = ""ref_sequences.fasta"")"
+"0",""
+"0","# Align the reference sequences using ClustalOmega"
+"0","#alignment <- msa(ref_seq, method = ""ClustalOmega"")"

@@ -1,0 +1,16 @@
+"0","#Rarefaction"
+"0","set.seed(1234)"
+"0","phyloseq_rarefact<- rarefy_even_depth (otu,sample.size = min(sample_sums(otu) ))"
+"2","You set `rngseed` to FALSE. Make sure you've set & recorded
+ the random seed of your session for reproducibility.
+See `?set.seed`
+
+"
+"2","...
+"
+"2","116OTUs were removed because they are no longer 
+present in any sample after random subsampling
+
+"
+"2","...
+"

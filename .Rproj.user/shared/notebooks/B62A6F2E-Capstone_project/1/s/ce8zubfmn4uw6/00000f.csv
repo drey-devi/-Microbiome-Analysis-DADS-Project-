@@ -1,0 +1,3 @@
+"0","my_comparisons <- list(c(""untreated"", ""DADS_treated""))"
+"0","sum_otu3<- select(sum_otu2, c('samples','depth','Soil','Treatment'))"
+"0","sum_otu3"

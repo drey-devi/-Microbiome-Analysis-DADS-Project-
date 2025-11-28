@@ -1,0 +1,4 @@
+"0","arg1_norm_RA<- arg1"
+"0","otu_table(arg1_norm_RA)<- phyloseq_relative_abun"
+"0","gp.ord<- ordinate(arg1_norm_RA, ""PCoA"")"
+"0","plot_ordination(arg1_norm_RA,gp.ord,title=""sample"",color=""Treatment"" )"

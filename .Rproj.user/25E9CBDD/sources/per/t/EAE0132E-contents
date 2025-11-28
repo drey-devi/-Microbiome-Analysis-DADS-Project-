@@ -1,0 +1,253 @@
+---
+title: "Final_Project_Normal"
+format: pdf
+editor: visual
+---
+
+## Initializing the Project Files
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(phyloseq)
+soil= read.csv("Metadata_diallyldisulfide_exp_16S.csv")
+arg1 <- readRDS("phyloseq.dads.rds")
+
+
+otu<- otu_table(arg1)
+taxa<- tax_table(arg1)
+sample<-sample_data(arg1)
+sam_sum<- sample_sums(arg1)
+sample_df<-  as.data.frame(sample)
+ref_seq<- refseq(arg1)
+```
+
+\
+\
+\
+\
+
+# Visualizing the Sequence Depth:
+
+**We are not pruning any reads as we are analyzing beta diversity**
+
+```{r}
+
+sum_otu <- data.frame(samples = rownames(otu), depth = rowSums(otu))
+
+p <- ggplot(data = sum_otu, aes(x = samples, y = depth)) +
+  geom_bar(stat = "identity") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(x = "Sample", y = "Sequencing Depth")
+p + facet_wrap(vars(sample$Soil,sample$Treatment))
+```
+
+```{r}
+sum_otu2 <- left_join(sum_otu, sample_df, by = c("samples" = "Sample_name16S"))
+sum_otu2 <- sum_otu2 %>% filter(!is.na(Treatment), !is.na(depth))
+p <- ggplot(data = sum_otu2, aes(x = Treatment, y = depth)) +
+  geom_boxplot()+ 
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(x = "Sample", y = "Sequencing Depth")
+p + facet_wrap(~Soil)
+
+
+```
+
+**Getting the Depth Information**
+
+```{r}
+sam_sum <- sample_sums(arg1)
+total_samples <- length(sam_sum)
+low_sam <- sum(sam_sum < 5000)
+avg_depth <- mean(sam_sum)
+min_depth <- min(sam_sum)
+max_depth <- max(sam_sum)
+```
+
+```{r}
+total_samples
+low_sam
+avg_depth
+min_depth
+max_depth
+```
+
+## Sub-setting the data:
+
+```{r}
+sum_otu <- data.frame(samples = rownames(otu), depth = rowSums(otu))
+sum_otu2 <- left_join(sum_otu, sample_df, by = c("samples" = "Sample_name16S"))
+sum_otu2 <- sum_otu2 %>% filter(!is.na(Treatment), !is.na(depth))
+my_comparisons <- list(c("untreated", "DADS_treated"))
+sum_otu3<- select(sum_otu2, c('samples','depth','Soil','Treatment'))
+```
+
+## Comparing Normalization Methods:
+
+### Non-normalized Data:
+
+```{r}
+gp.ord<- ordinate(arg1, "PCoA")
+plot_ordination(arg1,gp.ord,title="sample",color="Treatment" )
+```
+
+### Relative Abundance
+
+```{r}
+#Relative abundance
+phyloseq_relative_abun<- transform_sample_counts(otu, function(x) x / sum(x) )
+```
+
+#### Plotting:
+
+```{r}
+arg1_norm_RA<- arg1
+otu_table(arg1_norm_RA)<- phyloseq_relative_abun
+gp.ord<- ordinate(arg1_norm_RA, "PCoA")
+plot_ordination(arg1_norm_RA,gp.ord,title="sample",color="Treatment" )
+plot_ordination(arg1_norm_RA,gp.ord,title="Taxa",color="Phylum", type="Taxa" )
+```
+
+### Rarefaction:
+
+```{r}
+#Rarefaction
+set.seed(1234)
+phyloseq_rarefact<- rarefy_even_depth (otu,sample.size = min(sample_sums(otu) ))
+```
+
+#### Plotting:
+
+```{r}
+## Resampling
+arg1_norm_RF<- arg1
+otu_table(arg1_norm_RF)<- phyloseq_rarefact
+gp.ord<- ordinate(arg1_norm_RF, "PCoA")
+plot_ordination(arg1_norm_RF,gp.ord,title="sample",color="Treatment" )
+plot_ordination(arg1_norm_RF,gp.ord,title="Taxa",color="Phylum", type="Taxa" )
+```
+
+### CSS:
+
+```{r}
+## CSS
+
+library(metagenomeSeq)
+
+CSS_norm<-function(ps){
+  library(metagenomeSeq)
+  ps.metaG<-phyloseq_to_metagenomeSeq(ps)
+  p_stat = cumNormStatFast(ps.metaG)
+  ps.metaG = cumNorm(ps.metaG, p = p_stat)
+  ps.metaG.norm <- MRcounts(ps.metaG, norm = T)
+  ps_CSS<-phyloseq(otu_table(ps.metaG.norm, taxa_are_rows = T), sample_data(ps),tax_table(ps))
+  return(ps_CSS)
+}
+arg1_norm_CSS<-CSS_norm(arg1)
+
+
+```
+
+#### Plotting:
+
+```{r}
+## CSS
+gp.ord<- ordinate(arg1_norm_CSS, "PCoA")
+plot_ordination(arg1_norm_CSS,gp.ord,title="sample",color="Treatment" )
+plot_ordination(arg1_norm_CSS,gp.ord,title="Taxa",color="Phylum", type="Taxa" )
+```
+
+## Saving the Normalized Object :
+
+```{r}
+saveRDS(phyloseq_relative_abun, file = "phyloseq_relative_abundance_normalized.rds")
+```
+
+## Building Phylogenetic Tree
+
+## Building Phylogenetic Tree
+
+```{r message=FALSE, warning=FALSE}
+# Load required packages
+library(phyloseq)
+library(msa)
+library(phangorn)
+library(Biostrings)
+library(ape)
+```
+
+### Extract Reference Sequences
+
+```{r}
+# Extract DNA sequences (refseq must be available in arg1)
+ref_seq <- refseq(arg1)
+
+# Remove any empty sequences
+ref_seq <- ref_seq[width(ref_seq) > 0]
+```
+
+### Multiple Sequence Alignment
+
+```{r}
+library(Biostrings)
+
+# Save your ref_seq (a DNAStringSet) to a FASTA file
+writeXStringSet(ref_seq, filepath = "ref_sequences.fasta")
+
+aligned_seqs <- readDNAStringSet("aligned_ref_sequences.fasta")
+# Align the reference sequences using ClustalOmega
+#alignment <- msa(ref_seq, method = "ClustalOmega")
+```
+
+### Tree Construction
+
+```{r}
+library(phangorn)
+
+# Convert aligned sequences to phyDat object
+phang_align <- phyDat(as.matrix(aligned_seqs), type = "DNA")
+
+# Distance matrix and NJ tree
+dm <- dist.ml(phang_align)
+tree_NJ <- NJ(dm)
+
+# Fit and optimize tree
+fit <- pml(tree_NJ, data = phang_align)
+fitGTR <- optim.pml(fit, model = "GTR", optInv = TRUE, optGamma = TRUE,
+                    rearrangement = "stochastic", control = pml.control(trace = 0))
+
+# Midpoint root
+rooted_tree <- midpoint(fitGTR$tree)
+
+# Merge with phyloseq object
+arg1_tree <- merge_phyloseq(arg1, rooted_tree)
+saveRDS(arg1_tree, "phyloseq_with_tree.rds")
+arg1_tree
+```
+
+```{r}
+tree <- phy_tree(arg1_tree)
+tree
+```
+
+```{r}
+# Load the ggtree package
+library(ggtree)
+library(phyloseq)
+
+# Extract the tree from the phyloseq object
+tree <- phy_tree(arg1_tree)
+
+# Plot using ggtree
+ggtree(tree, layout = "circular") + 
+  geom_tiplab(size = 1) + 
+  ggtitle("Circular Phylogenetic Tree of 16S Sequences")
+```
+
+```{r}
+write.tree(tree, file = "tree_for_iTOL.nwk")
+```

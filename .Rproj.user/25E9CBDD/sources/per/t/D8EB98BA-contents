@@ -1,0 +1,83 @@
+---
+title: "Final Project BDS 491"
+format: pdf
+editor: visual
+---
+
+## Code for Hypotesis 1 (Divy)
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(phyloseq)
+library(vegan)
+soil= read.csv("Metadata_diallyldisulfide_exp_16S.csv")
+arg1 <- readRDS("phyloseq.dads.rds")
+
+
+otu<- otu_table(arg1)
+taxa<- tax_table(arg1)
+sample<-sample_data(arg1)
+sam_sum<- sample_sums(arg1)
+sample_df<-  as.data.frame(sample)
+```
+
+## Normalization
+
+```{r}
+#Relative abundance
+phyloseq_relative_abun<- transform_sample_counts(otu, function(x) x / sum(x) )
+```
+
+```{r}
+arg1_norm_RA<- arg1
+otu_table(arg1_norm_RA)<- phyloseq_relative_abun
+```
+
+```{r}
+sample_df <- data.frame(sample_data(arg1))
+sample_df_RA <- data.frame(sample_data(arg1_norm_RA))
+mad_sample <- sample_df_RA %>% filter(Soil == "madras")
+tul_sample <- sample_df_RA %>% filter(Soil != "madras")
+```
+
+## Calculating Distance Matrix
+
+```{r}
+bray_dist <- phyloseq::distance(arg1_norm_RA, method = "bray")
+
+# Now performing PERMANOVA: 
+adonis_test <- adonis2(bray_dist ~ Soil, data = sample_df_RA)
+print(adonis_test)
+```
+Here we can see that since the p-value is ~0.07 (>> 0.05),  there is no evidence that the type of soil has a effect on microbial community composition. 
+
+```{r}
+adonis2(bray_dist ~ Soil * Treatment, data = sample_df_RA)
+```
+Now, if treatment is also taken into account the p-value of 0.001 (<<0.05), means there at least them together have a siginificant impact on the microbial community composition. 
+
+```{r}
+adonis2(bray_dist ~ Treatment, data = sample_df_RA)
+```
+
+Now, Looking Just at the PERMANOVA of treatment alone we get a p-value of 0.001 (<<0.05), this clearly indicates that Treatment along is having a significant impact on the microbial community composition. 
+
+
+## Ploting Beta Diversity Ordination Plots 
+```{r}
+ordination <- ordinate(physeq = arg1_norm_RA, method = "CAP", distance = "bray", formula = ~Soil)
+plot_ordination(arg1_norm_RA, ordination, color = "Soil", title = "Beta Diversity by Soil") +
+  facet_wrap(~Treatment)
+```
+
+The graphs shows that Soil only is accounting for 1.5% of the variance in the microbial community composition while Treatment is explaining 72% of the variation. Though, the clustering is still tight among the groups of soil thus, microbial communities still differ by soil. So, in this case the treatment ppears to shift microbial communities but does not eliminate the differences caused by soil type.
+
+
+
+
+
+
+

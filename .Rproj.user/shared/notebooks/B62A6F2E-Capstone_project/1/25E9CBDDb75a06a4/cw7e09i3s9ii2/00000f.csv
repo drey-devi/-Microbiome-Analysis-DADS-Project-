@@ -1,0 +1,13 @@
+"0","library(phyloseq)"
+"0","library(vegan)"
+"0",""
+"0","myphyloseq_bray <- phyloseq::distance(arg1_norm_RA, method = ""bray"")"
+"0","sample_df <- data.frame(sample_data(arg1_norm_RF))"
+"0","covar<- colnames(arg1_norm_RF@sam_data)"
+"0","adonis_result <- adonis(myphyloseq_bray ~ covar[3], data = sample_df)"
+"2","Warning: 'adonis' is deprecated.
+Use 'adonis2' instead.
+See help(""Deprecated"") and help(""vegan-deprecated"")."
+"2","Error in `contrasts<-`(`*tmp*`, value = contr.funs[1 + isOF[nn]]) : 
+  contrasts can be applied only to factors with 2 or more levels
+"

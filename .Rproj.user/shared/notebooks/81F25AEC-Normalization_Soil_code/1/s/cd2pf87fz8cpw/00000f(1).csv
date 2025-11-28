@@ -1,0 +1,8 @@
+"0",""
+"0","sum_otu <- data.frame(samples = rownames(otu), depth = rowSums(otu))"
+"0",""
+"0","p <- ggplot(data = sum_otu, aes(x = samples, y = depth)) +"
+"0","  geom_bar(stat = ""identity"") + "
+"0","  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +"
+"0","  labs(x = ""Sample"", y = ""Sequencing Depth"")"
+"0","p + facet_wrap(vars(sample$Soil,sample$Treatment))"

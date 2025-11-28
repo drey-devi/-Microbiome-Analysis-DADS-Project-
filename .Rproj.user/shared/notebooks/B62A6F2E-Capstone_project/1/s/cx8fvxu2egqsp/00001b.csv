@@ -1,0 +1,11 @@
+"0","ggtree(tst) + 
+  theme_tree2() + 
+geom_tiplab(size=0.05, angle=90) 
+"
+"1","[1m[33mError[39m in `fortify()`:[22m
+[38;5;251m[33m![38;5;251m `data` must be a [34m<data.frame>[38;5;251m, or an object coercible by `fortify()`, or a valid
+  [34m<data.frame>[38;5;251m-like object coercible by `as.data.frame()`.[39m
+[1mCaused by error in `.prevalidate_data_frame_like_object()`:[22m
+[38;5;251m[33m![38;5;251m `dim(data)` must return an [34m<integer>[38;5;251m of length 2.[39m
+[90mRun `]8;;x-r-run:rlang::last_trace()rlang::last_trace()]8;;` to see where the error occurred.[39m
+"

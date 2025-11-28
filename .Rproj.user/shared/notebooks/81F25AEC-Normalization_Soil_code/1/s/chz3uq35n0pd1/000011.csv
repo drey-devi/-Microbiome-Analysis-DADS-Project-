@@ -1,0 +1,15 @@
+"0","# Load the ggtree package"
+"0","library(ggtree)"
+"0","library(phyloseq)"
+"0",""
+"0","# Extract the tree from the phyloseq object"
+"0","tree <- phy_tree(arg1_tree)"
+"0",""
+"0","# Plot using ggtree"
+"0","ggtree(tree, layout = ""circular"") + "
+"0","  geom_tiplab(size = 1) + "
+"0","  ggtitle(""Circular Phylogenetic Tree of 16S Sequences"")"
+"2","Found more than one class ""phylo"" in cache; using the first, from namespace 'phyloseq'
+"
+"2","Also defined by ‘tidytree’
+"

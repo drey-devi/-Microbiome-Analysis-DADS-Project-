@@ -1,0 +1,5 @@
+"0","## Resampling"
+"0","arg1_norm_RF<- arg1"
+"0","otu_table(arg1_norm_RF)<- phyloseq_rarefact"
+"0","gp.ord<- ordinate(arg1_norm_RF, ""PCoA"")"
+"0","plot_ordination(arg1_norm_RF,gp.ord,title=""sample"",color=""Treatment"" )"

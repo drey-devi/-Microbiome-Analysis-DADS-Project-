@@ -1,0 +1,5 @@
+"0","# Extract DNA sequences (refseq must be available in arg1)"
+"0","ref_seq <- refseq(arg1)"
+"0",""
+"0","# Remove any empty sequences"
+"0","ref_seq <- ref_seq[width(ref_seq) > 0]"

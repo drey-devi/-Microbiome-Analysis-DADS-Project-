@@ -1,0 +1,222 @@
+---
+title: "Project Soil"
+format: html
+editor: visual
+echo: TRUE
+  warning: FALSE
+---
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+library(phyloseq)
+soil= read.csv("Metadata_diallyldisulfide_exp_16S.csv")
+arg1 <- readRDS("phyloseq.dads.rds")
+
+
+otu<- otu_table(arg1)
+taxa<- tax_table(arg1)
+sample<-sample_data(arg1)
+sam_sum<- sample_sums(arg1)
+sample_df<-  as.data.frame(sample)
+sample_df
+taxa
+otu[,1]
+
+```
+
+```{r}
+
+sum_otu <- data.frame(samples = rownames(otu), depth = rowSums(otu))
+
+p <- ggplot(data = sum_otu, aes(x = samples, y = depth)) +
+  geom_bar(stat = "identity") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(x = "Sample", y = "Sequencing Depth")
+p + facet_wrap(vars(sample$Soil,sample$Treatment))
+```
+
+```{r}
+length(rownames(otu))
+
+```
+
+```{r}
+sum_otu2 <- left_join(sum_otu, sample_df, by = c("samples" = "Sample_name16S"))
+sum_otu2 <- sum_otu2 %>% filter(!is.na(Treatment), !is.na(depth))
+p <- ggplot(data = sum_otu2, aes(x = Treatment, y = depth)) +
+  geom_boxplot()+ 
+  coord_flip()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(x = "Sample", y = "Sequencing Depth")
+p + facet_wrap(~Soil)
+
+
+```
+
+```{r}
+my_comparisons <- list(c("untreated", "DADS_treated"))
+sum_otu3<- select(sum_otu2, c('samples','depth','Soil','Treatment'))
+sum_otu3
+p <- ggboxplot(sum_otu3,x = "Treatment", y = "depth",color = "Treatment") +
+   stat_compare_means(comparisons = my_comparisons, method = "t.test", 
+                     paired = TRUE,              
+                     label = "p.format",     
+                     tip.length = 0.02,      
+                     label.y = 30000) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(x = "Sample", y = "Sequencing Depth")
+p +  facet_wrap(vars(Soil)) 
+```
+
+```{r}
+#Relative abundance
+phyloseq_relative_abun<- transform_sample_counts(otu, function(x) x / sum(x) )
+phyloseq_relative_abun[,2]
+```
+
+```{r}
+#Rarefaction
+set.seed(1234)
+phyloseq_rarefact<- rarefy_even_depth (otu,sample.size = min(sample_sums(otu) ))
+phyloseq_rarefact [,2]
+```
+
+```{r}
+gp.ord<- ordinate(arg1, "PCoA")
+plot_ordination(arg1,gp.ord,title="sample",color="Treatment" )
+
+```
+
+```{r}
+## Relative Abundance
+arg1_norm_RA<- arg1
+otu_table(arg1_norm_RA)<- phyloseq_relative_abun
+gp.ord<- ordinate(arg1_norm_RA, "PCoA")
+plot_ordination(arg1_norm_RA,gp.ord,title="sample",color="Treatment" )
+plot_ordination(arg1_norm_RA,gp.ord,title="Taxa",color="Phylum", type="Taxa" )
+```
+
+```{r}
+## Resampling
+arg1_norm_RF<- arg1
+otu_table(arg1_norm_RF)<- phyloseq_rarefact
+gp.ord<- ordinate(arg1_norm_RF, "PCoA")
+plot_ordination(arg1_norm_RF,gp.ord,title="sample",color="Treatment" )
+plot_ordination(arg1_norm_RF,gp.ord,title="Taxa",color="Phylum", type="Taxa" )
+```
+
+```{r}
+## CSS
+
+library(metagenomeSeq)
+
+CSS_norm<-function(ps){
+  library(metagenomeSeq)
+  ps.metaG<-phyloseq_to_metagenomeSeq(ps)
+  p_stat = cumNormStatFast(ps.metaG)
+  ps.metaG = cumNorm(ps.metaG, p = p_stat)
+  ps.metaG.norm <- MRcounts(ps.metaG, norm = T)
+  ps_CSS<-phyloseq(otu_table(ps.metaG.norm, taxa_are_rows = T), sample_data(ps),tax_table(ps))
+  return(ps_CSS)
+}
+arg1_norm_CSS<-CSS_norm(arg1)
+
+
+```
+
+```{r}
+## CSS
+gp.ord<- ordinate(arg1_norm_CSS, "PCoA")
+plot_ordination(arg1_norm_CSS,gp.ord,title="sample",color="Treatment" )
+plot_ordination(arg1_norm_CSS,gp.ord,title="Taxa",color="Phylum", type="Taxa" )
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+biplot_df <- plot_ordination(arg1_norm_RA, gp.ord, type = "biplot", justDF = TRUE)
+
+taxa_coords_df <- biplot_df[!is.na(biplot_df$Phylum), ]
+taxa_coords_df$distance_from_origin <- sqrt(taxa_coords_df$Axis.1^2 + taxa_coords_df$Axis.2^2)
+
+top_taxa <- taxa_coords_df %>%
+  arrange(desc(distance_from_origin)) 
+head(top_taxa,5)
+ggplot(data=top_taxa, aes(x=distance_from_origin, y=Phylum))+ geom_point()
+
+
+```
+
+```{r}
+library(tidyverse)
+library(ggtree)
+library("ape")
+random_tree = rtree(ntaxa(arg1_norm_CSS), rooted=TRUE, tip.label=taxa_names(arg1_norm_CSS))
+ggtree(random_tree) + 
+  theme_tree2() + 
+geom_tiplab(size=0.05, angle=90) 
+arg1_norm_CSS_tree = merge_phyloseq(arg1_norm_CSS, sample, random_tree)
+
+tst<- UniFrac(arg1_norm_CSS_tree, TRUE)
+tst
+ggtree(tst) + 
+  theme_tree2() + 
+geom_tiplab(size=0.05, angle=90) 
+```
+
+```{r}
+plot_ordination(arg1_norm_RF,gp.ord,title="Taxa",color="Phylum", type="Taxa" )
+
+```
+
+```{r}
+library(phyloseq)
+library(vegan)
+
+myphyloseq_bray <- phyloseq::distance(arg1_norm_RF, method = "bray")
+sample_df <- data.frame(sample_data(arg1_norm_RF))
+covar<- colnames(arg1_norm_RF@sam_data)
+adonis_result <- adonis(myphyloseq_bray ~ covar[3], data = sample_df)
+#print(adonis_result)
+
+```
+
+```{r}
+adonis_result2 <- adonis(myphyloseq_bray ~ Soil, data = sample_df)
+#print(adonis_result2)
+```
+
+```{r}
+adonis_result3 <- adonis(myphyloseq_bray ~ Incubation, data = sample_df)
+print(adonis_result3)
+
+```
+
+```{r}
+sample_df <- as.data.frame(sample_df)
+mad_sample <- sample_df %>% filter(Soil == "madras")
+tul_sample <- sample_df %>% filter(Soil != "madras")
+
+```
+
+# Normalized is better
+
+```{r}
+bet_ord <- ordinate(physeq = arg1_norm_RA , method= "CAP", distance= "bray", formula = ~Soil)
+plot_ordination(arg1_norm_RA, bet_ord, color="Soil", 
+                title="Sample Sepration based on Soil Type") + facet_wrap("Treatment")
+```
+
+## Incubation effect per treatment
+
+
+```{r}
+bet_ord <- ordinate(physeq = arg1_norm_RA , method= "CAP", distance= "bray", formula = ~Incubation)
+plot_ordination(arg1_norm_RA, bet_ord, color="Incubation", 
+                title="Sample Sepration based on Incubation? Type") + facet_wrap("Treatment")
+```
+
+

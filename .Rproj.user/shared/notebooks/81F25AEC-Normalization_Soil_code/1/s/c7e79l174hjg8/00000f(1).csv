@@ -1,0 +1,6 @@
+"0","sam_sum <- sample_sums(arg1)"
+"0","total_samples <- length(sam_sum)"
+"0","low_sam <- sum(sam_sum < 5000)"
+"0","avg_depth <- mean(sam_sum)"
+"0","min_depth <- min(sam_sum)"
+"0","max_depth <- max(sam_sum)"

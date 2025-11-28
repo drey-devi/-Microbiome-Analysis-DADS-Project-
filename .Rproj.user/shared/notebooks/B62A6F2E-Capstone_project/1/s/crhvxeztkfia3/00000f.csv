@@ -1,0 +1,73 @@
+"0","library(tidyverse)"
+"2","── [1mAttaching core tidyverse packages[22m ────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse 2.0.0 ──
+[32m✔[39m [34mforcats  [39m 1.0.0     [32m✔[39m [34mreadr    [39m 2.1.5
+[32m✔[39m [34mlubridate[39m 1.9.4     [32m✔[39m [34mstringr  [39m 1.5.1
+[32m✔[39m [34mpurrr    [39m 1.0.4     [32m✔[39m [34mtibble   [39m 3.2.1"
+"2","── [1mConflicts[22m ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+[31m✖[39m [34mBiobase[39m::[32mcombine()[39m       masks [34mBiocGenerics[39m::combine(), [34mdplyr[39m::combine()
+[31m✖[39m [34mMatrix[39m::[32mexpand()[39m         masks [34mtidyr[39m::expand()
+[31m✖[39m [34mdplyr[39m::[32mfilter()[39m          masks [34mstats[39m::filter()
+[31m✖[39m [34mdplyr[39m::[32mlag()[39m             masks [34mstats[39m::lag()
+[31m✖[39m [34mMatrix[39m::[32mpack()[39m           masks [34mtidyr[39m::pack()
+[31m✖[39m [34mBiocGenerics[39m::[32mPosition()[39m masks [34mggplot2[39m::Position(), [34mbase[39m::Position()
+[31m✖[39m [34mMatrix[39m::[32munpack()[39m         masks [34mtidyr[39m::unpack()
+[36mℹ[39m Use the ]8;;http://conflicted.r-lib.org/conflicted package]8;; to force all conflicts to become errors"
+"0","library(ggtree)"
+"2","ggtree v3.14.0 Learn more at https://yulab-smu.top/contribution-tree-data/
+
+Please cite:
+
+Guangchuang Yu, Tommy Tsan-Yuk Lam, Huachen Zhu, Yi Guan. Two methods for mapping and visualizing associated data on phylogeny using ggtree.
+Molecular Biology and Evolution. 2018, 35(12):3041-3043. doi:10.1093/molbev/msy194
+"
+"2","
+Attaching package: ‘ggtree’
+
+"
+"2","The following object is masked from ‘package:Matrix’:
+
+    expand
+
+"
+"2","The following object is masked from ‘package:ggpubr’:
+
+    rotate
+
+"
+"2","The following object is masked from ‘package:tidyr’:
+
+    expand
+
+"
+"0","library(""ape"")"
+"2","
+Attaching package: ‘ape’
+
+"
+"2","The following object is masked from ‘package:ggtree’:
+
+    rotate
+
+"
+"2","The following object is masked from ‘package:ggpubr’:
+
+    rotate
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    where
+
+"
+"0","random_tree = rtree(ntaxa(arg1_norm_CSS), rooted=TRUE, tip.label=taxa_names(arg1_norm_CSS))"
+"2","Found more than one class ""phylo"" in cache; using the first, from namespace 'phyloseq'
+"
+"2","Also defined by ‘tidytree’
+"
+"0","ggtree(random_tree) + "
+"0","  theme_tree2() + "
+"0","geom_tiplab(size=0.05, angle=90) "
+"2","Found more than one class ""phylo"" in cache; using the first, from namespace 'phyloseq'
+"
+"2","Also defined by ‘tidytree’
+"
